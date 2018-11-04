@@ -1,0 +1,106 @@
+
+A word on makefiles
+===================
+
+GNU Make reference: https://www.gnu.org/software/make/manual/html_node/index.html
+
+Makefiles are made up of rules.
+
+Each rule has a structure like this:
+
+  TARGET:PREREQUISITS
+  	RECIPE
+
+If the target is provided to the make command (eg the 'main.c' target in 'make main.c'), make
+checks the prerequisits, eg "Does this file exist and or has it changed?" or "Has this other
+make target been run?".
+
+If the prerequisits are fullfilled and the target is a newer file than the prerequisit files,
+make argues "Well, the recipe must already have been run" and quits.
+If the target file is older than the prerequisit files though, make will run the recipe commands.
+
+
+
+You should read rules as follows.
+For the rule:
+
+  a : b c
+  	cat b > a
+  	cat c > a
+
+you'd read: make any file a from the files b and c.
+The recipe is executed for any file that matches the filename 'a', but only if two files 'b' and 'c'
+also exist.
+
+
+
+If you have a build process with multiple interdependant steps, it's helpful to build it up from
+the final target.
+
+Eg: You have some library code, that needs to be build and packaged into a lib. Then you want
+    to use your lib to compile the actual execution code.
+
+In this case you put the command to compile the final executable first, so that it depends on
+the compile-library target, which depends on the compile-source-files target/s.
+
+That way make will follow the dependancy tree and execute all necessary recipes, and it won't
+seemingly randomly skip any.
+
+
+For more generalizations you can use variables by assigning them with bash's syntax and calling
+them with $(VARNAME). You can use bash command substitution with $(COMMAND).
+
+You can define suffixes with (eg):
+
+  .SUFFIXES: .c .o .a
+
+You can then use those suffixes like this:
+
+  .input.output:
+  	recipe
+
+eg:
+
+  .c.o:
+  	gcc -c $<
+  	mv $@ object/$@
+
+"$<" is the placeholder for input files (which end in .c here), "$@" is the placeholder for
+output files (which end in .o here).
+
+
+
+PATTERN RULES
+
+More complicated generics can be done using '%' as a filename placeholder in the target (eg):
+
+  %.html: %.md
+  	pandoc -o $@ $<
+
+This would turn any markdown file into an html file of the same name.
+For some reason you can't use the '%' notation in the recipe commands, but if you need just
+the basename of a file (without its extension), you can use the substitutions:
+
+  	$(basename $@)
+  	$(basename $<)
+
+to get the filename of the output and the input files respectively.
+
+Note: in the last example $@ would be <name>.html and $< would be <name>.md, $(basename $@)
+would yield <name>.
+
+
+The above example really says: make any file *.html from another file *.md
+make derives the substitution of % from the targets.
+
+For more on pattern rules: https://www.gnu.org/software/make/manual/html_node/Pattern-Rules.html
+
+
+LISTS
+
+You can also use lists in variables. Make will run each recipe, that depends on a list in
+some way, for each element of the list. (You can also use these in targets and prereqs)
+
+List syntax (eg):
+
+  objects = main.o kbd.o command.o display.o

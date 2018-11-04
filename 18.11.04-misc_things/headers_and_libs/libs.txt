@@ -1,0 +1,151 @@
+How to make libraries in C
+==========================
+
+1. How do headers and libraries work anyways?
+
+   A header file can contain basically anything.
+   It can contain macros and actual code.
+   It can contain function declarations (without initializations), which are called prototypes
+   and are what's in rust referred to as signatures.
+
+   They work, because the preprocessor replaces the #include statement with the contents of the header file.
+   What's in the header file is available inside the c file.
+
+   If the compiler knows a function's prototype, it can do a static type check on the usage of that function,
+   independently of the actual function's code.
+
+
+2. Static Libraries
+
+   Static Libraries are compiled the same way Dynamic or Shared Libraries are, but I'll get to that later.
+
+   Static Libraries are called static, cause the can't change at runtime. That's because they are compiled
+   directly into the final binary file. Rust uses static libraries by default.
+
+
+3. Dynamic Libraries
+
+   Dynamic Libraries are also called Shared Libraries, because multiple programs can use the same library.
+   They are a means of duplication reduction.
+
+   A Dynamic Library is included into the program at runtime, that makes them a bit slower than Static Libraries,
+   but it makes the more flexible.
+
+
+4. Making Libraries
+
+   Static Libraries are linked at compile-time.
+   Dynamic Libraries obviously aren't.
+
+   Either way, they are compiled before they are linked.
+   Compiling them is easy.
+
+   Sidenote: compile means to turn code into object code.
+             linking means to turn object code into binary code.
+
+
+
+   By default gcc compiles and links automatically, but you can tell it to output the results of the separate
+   steps with a flag.
+
+   To output the object files use the -c flag:
+
+     gcc -c -fpic <input c files> [-o <output>]
+
+   -c makes gcc output the object code.
+   -fpic stands for 'force Position Independant Code', which means that C isn't allowed to use any specific absolute
+   memory locations. If you want to make a library, you should avoid hard-coded addresses, cause libs are usually
+   used across systems.
+
+
+
+   To then make a Dynamic Library use:
+
+     gcc -shared -o <output so files> <input o files>
+
+   -shared makes it a Dynamic Library.
+
+   Note the naming conventions: on Linux a dynamic lib is called 'lib<name>.so', a static lib is called 'lib<name>.a'.
+   This is important in a moment.
+
+
+
+   To make a Static Library use:
+
+     ar rcs <output a file> <input o file> [ <input o file> [ ... ] ]
+
+   ar is a linux archive tool.
+   rcs are actually 3 separate commands to ar
+     r 'replace existing or insert new file(s) into the archive'
+     c 'do not warn if the library had to be created' which is a modifier on 'r'
+     s 'create an archive index (cf. ranlib)' which is also a modifier on 'r'
+
+   So basically, this command packs all the o files into a linux archive, that can be linked from at runtime.
+
+
+5. Now for Using Libraries
+
+   You use Shared and Static Libraries in the same way.
+
+   At this point you should have compiled all the code of the libs (and the executable) into object code.
+   You want to link now.
+
+   To link the object files use:
+
+     gcc -o <output file> <input o file> [ <input o file> [ ... ] ] -L. -l<name>
+
+   -L. tells gcc to look for libraries in the current directory
+   -l<name> looks for a library file with this kind of name: lib<name>.so or lib<name>.a (remember from above?)
+
+   eg: gcc -o executable -L. -lmyLib main.o secondary.o
+       which would compile 'main.o' and 'secondary.o' with 'libmyLib.a' (which is in ./) into the binary file 'executable'
+
+   Again, this is the same for Dynamic and Static Libraries.
+
+   One thing though, Static Libraries are linked into the binary file by this command.
+   Dynamic Libraries aren't. To make them available to the final program at runtime, you have to make sure,
+   that the location, where the .sa file is stored is in the $LD_LIBRARY_PATH, if it is not one of the default
+   library locations.
+
+   On Linux libraries can be found in /lib/ (for system-owned libs) and /usr/lib/ (for customly installed and shared libs)
+   A library in one of those locations should be available by default.
+
+   If your library isn't in one of those locations, set $LD_LIBRARY_PATH using:
+
+     export $LD_LIBRARY_PATH=<path_to_library>:$LD_LIBRARY_PATH
+
+   If you are in the directory with the library file, use:
+
+     export $LD_LIBRARY_PATH=$PWD:$LD_LIBRARY_PATH
+
+
+6. A few more words
+
+   In /usr/include/ you can find a lot of header files.
+
+
+
+   The order of flags to gcc is sort of important. Flags, that possibly expect mutliple inputs
+   need to be handled carefully. For example -L expects any number of directories, so:
+
+     gcc -o outfile -L. infile.o
+
+   won't work, cause gcc thinks 'infile.o' is supposed to be another directory.
+
+   To handle this correctly, just make sure you have lists of inputs surrounded by flags or at the end of the command,
+   cause gcc will recognize the beginning of another flag as the end of the input list:
+
+     gcc -o outfile infile1.o infile2.o -L.
+
+   will work.
+
+   Keep that in mind.
+
+
+
+   To make libraries you obviously need to extract the object files. To compile a binary, you don't necessarily
+   have to, though. If your libs are finished, you can just go:
+
+     gcc -o outfile infile.c [ <infile.c> [ ... ] ] -L. -l<name> [ ... ]
+
+   to compile the source code to binary directly
