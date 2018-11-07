@@ -22,24 +22,28 @@ int main() {
 
 	// Get a decimal number to convert
 	printf("Gib natürliche Zahl mit Basis 10 ein: ");
-	scanf("%d", &dec_number);
+	scanf("%10d", &dec_number); // max 10 digits: the largest positive integer, we can receive is 2147483647, which has 10 digits
 
-	// Get a target base to convert the decimal number to
-	printf("Konvertierung in welche Basis? Gűltige Basen: 2 bis 16: ");
-	scanf("%d", &target_base);
-
-	// Check the input for correctness
-
+	// Check the decimal number for validity
+	// Is the decimal number out of range?
 	if (dec_number == 0) {
 		printf("Die natűrliche Zahl ist 1-stellig und lautet: 0\n");
 		return 0;
 	} else if (dec_number < 1) {
 		printf("Die natűrliche Zahl ist zu klein um eine natürliche Zahl zu sein, dumm dumm!\n");
+		printf("... Oder die natűrliche Zahl ist grőßer als 2147483647 und damit eine 2-Komplement Zahl und somit auch zu klein, dumm dumm!\n");
+		printf("... Oder die natűrliche Zahl ist zu groß um von 32-bit Integern dargestellt zu werden, dumm dumm!\n");
 		return 1;
 	}
 
+	// Get a target base to convert the decimal number to
+	printf("Konvertierung in welche Basis? Gűltige Basen: 2 bis 16: ");
+	scanf("%2d", &target_base);
+
+	// Check the base for validity
+	// Is the base in range?
 	if (target_base > 16 || target_base < 2) {
-		printf("Die Zielbasis ist nicht zulässig!\n");
+		printf("Die Zielbasis ist nicht zulässig! (Zu klein oder zu groß)\n");
 		return 1;
 	}
 
