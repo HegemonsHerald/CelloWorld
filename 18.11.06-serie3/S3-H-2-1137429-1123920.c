@@ -25,9 +25,9 @@ int main() {
 		printf("Die natuerliche Zahl ist 1-stellig und lautet: 0\n");
 		return 0;
 	} else if (dec_number < 1) {
-		printf("Die natuerliche Zahl ist zu klein um eine natürliche Zahl zu sein, dumm dumm!\n");
-		printf("... Oder die natuerliche Zahl ist groesser als 2147483647 und damit eine 2-Komplement Zahl und somit auch zu klein, dumm dumm!\n");
-		printf("... Oder die natuerliche Zahl ist zu gross um von 32-bit Integern dargestellt zu werden, dumm dumm!\n");
+		printf("Die natuerliche Zahl ist zu klein um eine natürliche Zahl zu sein!\n");
+		printf("... Oder die natuerliche Zahl ist groesser als 2147483647 und damit eine 2-Komplement Zahl und somit auch zu klein!\n");
+		printf("... Oder die natuerliche Zahl ist zu gross um von 32-bit Integern dargestellt zu werden!\n");
 		return 1;
 	}
 
