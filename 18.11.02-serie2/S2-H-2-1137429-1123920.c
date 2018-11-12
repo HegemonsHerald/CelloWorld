@@ -8,6 +8,9 @@ char series      = 2;
 char group       = 2;
 char semester[]  = "WS 2018 / 2019"; // contains 14 ascii symbols and a \0
 
+// int sem = 2018;
+// printf("WS %d / %d", sem, ++sem);
+
 // Info Student 1
 char name_stu1[] = "Gerrit Heinen";
 char sems_stu1   = 1;
