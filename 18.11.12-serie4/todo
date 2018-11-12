@@ -1,0 +1,10 @@
+
+
+∙ find a way to convert the result int into the actual exponent
+∙ write up a file explanation.c that walks through the bitmasking process for the
+  separation of the ieee float into its components using an example and lots of
+  helpful output
+∙ actually do the tasks, that is: make your new code fit the task
+   ✓ potentially find a way to do the whole thing MSB-agnostic...
+      → used type casting to function arguments: the vars don't have to be unsigned
+        but when passed to to_float() they are treated as if they were!

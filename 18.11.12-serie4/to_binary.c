@@ -78,7 +78,7 @@ void to_binary(unsigned int number, unsigned int digits) {
 
 int main() {
 
-	unsigned int number = 2; // == 00000000000000000000000000000010
+	int number = 2; // == 00000000000000000000000000000010
 
 	printf("Integer 2 as binary:\t\t");
 	to_binary( number, 32 );
@@ -89,7 +89,7 @@ int main() {
 
 	union {
 		float f;
-		unsigned int i;
+		int i;
 	} float_number;
 
 	float_number.f = 2.0;
