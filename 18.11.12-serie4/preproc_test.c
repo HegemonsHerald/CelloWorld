@@ -3,6 +3,8 @@
 #define HONK 42
 #define TARD HONK + 19
 
+#define LŐŐPS printf("Brother, do you have some lőőps?");
+
 int main() {
 
 	// The code below produces the correct output, which means
@@ -15,6 +17,8 @@ int main() {
 	printf("%d\n", HONK);
 	printf("%d\n", TARD);
 	printf("%d\n", HONK + TARD);
+
+	LŐŐPS // And you can use unicode symbols in #defines!!!
 
 	return 0;
 
