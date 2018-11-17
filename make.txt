@@ -1,0 +1,72 @@
+
+make
+====
+
+- make uses rules that ultimately check for the existence of a pattern:
+
+TARGET: PREREQUISITES
+	RECIPE
+
+= "If the target has to be made, check its prerequisites. If those are all in check, make the target using the recipe. If the prerequisites
+   aren't fullfilled, look for a rule below, that allows you to make the prerequisites"
+
+
+- make executes from top to bottom
+- the first rule of make has to contain all the things you always want to have build as prerequisites
+
+- you can use shell expansion in rules:
+
+honk : quackers-*
+	<some recipe...>
+
+= "Make the file honk from whatever the shellexpansion of quackers-* yields"
+
+- using % in rules creates pattern rules:
+
+sth-% : sth-%.c
+	clang -o $@ $<
+
+= "to make any file called 'sth-<anything in here>' from a file called 'sth-<anything in here>.c' use clang..."
+  Note, that the '%' will be filled in with the same value on both sides of the ':', and that no expansion is done. This is a make-specific
+  pattern, so make will build any file, that matches the target pattern using a single file matching the prerequisite pattern and not all
+  files matching the prerequisite pattern (which it would if the '%' was a '*').
+
+- $@ is substituted with the target name in the recipe
+- $< is substituted with the first prerequisite's name in the recipe
+- $^ is substituted with the list of prerequisites in the recipe
+
+- you can use variables/macros with:	$(NAME)
+- you can define variables with:	NAME=stuff
+- you can assign shell-output with:	NAME := $(shell <some shell command>)
+
+- you can use if blocks like this:
+
+ifeq (<sth>,<sth>)
+	RECIPE
+endif
+
+- you can make a build depend on a directory like this:
+
+objects=$(DIR_NAME)/object1 $(DIR_NAME)/object2 [...]
+
+all: $(objects)
+
+<and then some rules that explain how to make the objects>
+[eg:]
+$(DIR_NAME)/% : %.c
+	clang -o $@ $<
+
+- when using such a pattern it is advisable to add the DIR_NAME directory as a dependency to the 'all' rule:
+
+all: $(DIR_NAME) $(objects)
+
+$(DIR_NAME) :
+	mkdir $(DIR_NAME)
+
+  so that the DIR_NAME will be made, if it doesn't exist (a build directory is after all a dependency of the build process)
+
+
+Good Resources:
+ - the actual documentation of GNU make: https://www.gnu.org/software/make/manual/html_node/index.html#SEC_Contents
+ - softwarecarpentry's video series on make: https://www.youtube.com/watch?v=djPWVqn7vjY&list=PLF47AC7312BE0799A
+ - I already made very simple C-makefiles that compile platform specifically for mac and linux
