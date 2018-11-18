@@ -18,7 +18,8 @@ endif
 
 
 # Which Objects should be made using this makefile?
-objects=$(BUILD_DIR)/union $(BUILD_DIR)/S4-H-2-1137429-1123920 $(BUILD_DIR)/to_binary $(BUILD_DIR)/using_bitmask $(BUILD_DIR)/preproc_test
+objects=$(BUILD_DIR)/put_your_source_files_here
+# You have to list all the files you want build prefixed with the BUILD_DIR in contents
 
 
 # make everything
