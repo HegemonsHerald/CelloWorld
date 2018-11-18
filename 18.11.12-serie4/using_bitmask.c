@@ -61,7 +61,7 @@ void to_binary(unsigned int number, unsigned int digits) {
 		printf("%d", single_digits[ --number_of_digits ]);
 
 		/**
-		 * note: --number_of_digits is used for two reasons:
+		 * Note: --number_of_digits is used for two reasons:
 		 *   1. number_of_digits represents the length of digits in single_digits,
 		 *      but for display we need to know the index of the digits in single_digits,
 		 *      which is offset by 1 because of 0-indexing!
