@@ -1,0 +1,17 @@
+
+
+
+Turns out substitution is really cool.
+
+
+Look under :h sub-replace-special for all the special tokens in the replace string
+ &		replace with the whole matched pattern
+ ~		the replace string from the last call to substitute
+
+ \0...\9	for use with \(\) capture groups in the pattern
+
+
+
+Look under :h pattern for the EBNF defintion of regular expressions
+and all the supported special characters. Vim supports all of the common POSIX 3
+regex items, including words and capture groups. I havn't seen advanced lookaraound.
