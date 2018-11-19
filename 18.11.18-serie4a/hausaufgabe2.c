@@ -111,23 +111,22 @@ int main()
     }
 
     // Fall 2: Null
-    if (exponent == 0 && mantisse == 0) {
+    else if (exponent == 0 && mantisse == 0) {
         printf("\nNull! Eingabe = %f\n", eingabe);
         return 0;
     }
 
     // Fall 3: Unendlichkeit
-    if (exponent == 255 && mantisse == 0) {
+    else if (exponent == 255 && mantisse == 0) {
         printf("\nUnendlichkeit! Eingabe = %f\n", eingabe);
         return 0;
     }
 
     // Fall 4: Not a Number
-    if (exponent == 255 && mantisse != 0) {
+    else if (exponent == 255 && mantisse != 0) {
         printf("\nNaN! Eingabe = %f\n", eingabe);
         return 1;
     }
-
 
     // ========================================================================
 
@@ -140,7 +139,7 @@ int main()
 
     // Fall 5: (Nicht) Standardfall
     // Wenn es sich NICHT um Standardfall handelt, abbrechen
-    if ( ! (0 < exponent && exponent < 255) ) { printf("\nEs handelt sich nicht um eine gűltige 32 Bit IEEE float Zahl!"); return 1; }
+    else if ( ! (0 < exponent && exponent < 255) ) { printf("\nEs handelt sich nicht um eine gűltige 32 Bit IEEE float Zahl!"); return 1; }
 
     // Wenn einer der Fälle aus c ausgelőst wird, wird das Programm abgebrochen,
     // bevor es hier ankommt.
