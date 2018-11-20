@@ -1,6 +1,6 @@
 
 
-objects=hausaufgabe2 sizes
+objects=hausaufgabe2 sizes pow_vs_shift
 
 all: $(objects)
 

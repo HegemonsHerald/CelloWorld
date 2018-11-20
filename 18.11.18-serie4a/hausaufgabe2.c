@@ -17,17 +17,6 @@ void printBinary(int zahl, int stellen)
     }
 }
 
-// Eine Funktion, die Potenzen berechnet
-// Sehr praktisch um Bitmasken herzustellen, wenn man nicht mit Hexadezimal arbeiten will
-unsigned int pow(unsigned int number, unsigned int exponent) {
-        unsigned int result = 1;
-        while (exponent > 0) { // so lange der exponent nicht 0 wird...
-                result *= number; // die zahl mit sich selbst multiplizieren!
-                exponent--;
-        }
-        return result;
-}
-
 int main()
 {
     // Interpretation IEEE Floatformat
@@ -57,10 +46,10 @@ int main()
     char vorzeichen_shift = 31; // Um wie viele Stellen man shiften muss, damit MSB (=Vorzeichen) zu LSB wird
     char exponent_shift = 23; // Um wie viele Stellen man shiften muss, um das letzte Bit des Exponenten auf das LSB zu bringen
 
-    unsigned int exponent_mask = pow(2, 8) -1; // Bitmaske mit 8 Einsen: 0...011111111
+    unsigned int exponent_mask = (1 << 8) -1; // Bitmaske mit 8 Einsen: 0...011111111
     exponent_mask = exponent_mask << exponent_shift; // Bitmaske auf die Position des Exponenten verschieben
 
-    unsigned int mantisse_mask = pow(2, 23) -1; // Bitmaske mit 23 Einsen
+    unsigned int mantisse_mask = (1 << 23) -1; // Bitmaske mit 23 Einsen
 
 
     vorzeichen = ieee.i >> vorzeichen_shift; // Vorzeichen auf LSB schieben,
