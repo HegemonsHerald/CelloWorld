@@ -44,16 +44,16 @@ int main()
 
                           /* Print mintermfunction */
 
-                          // Init to all 1 representation
-                          char minterm[] = " x2 x1 x0";
-
                           // If this is indeed a minterm
                           if (result == 1) {
+
+                                  // Init minterm without any inversions
+                                  char minterm[] = " x2 x1 x0";
 
                                   // Decide, whether one of the inputs is inverted...
 
                                   if (x2 == 0) {
-                                          minterm[0] = '!';
+                                          minterm[0] = '!'; // ... add the inverter symbol, if it is...
                                   }
 
                                   if (x1 == 0) {
