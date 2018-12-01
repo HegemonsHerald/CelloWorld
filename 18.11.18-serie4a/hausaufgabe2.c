@@ -10,7 +10,7 @@ void printBinary(int zahl, int stellen)
     for (int i=stellen-1; i>=0; i--)          // stellen-1 ist der Index des MSB, i zählt also vom Index des MSB zum Index des LSB (=0)
     {
         int b;                                // b wird deklariert
-        b = zahl >> i;                        // b sei gleich: die Zahl um i Stellen nach rechts verschoben, was die i-te Stelle der Binärrepresentation der Zahl auf das LSB bewegt
+        b = zahl >> i;                        // b sei gleich: die Zahl wird um i Stellen nach rechts verschoben, was die i-te Stelle der Binärrepresentation der Zahl auf das LSB bewegt
         b = b & 0x00000001;                   // b wird Bit-verundet mit der Zahl '1': hier wird eine Bitmaske auf das LSB angelegt, so dass b hinterher den Wert des LSB, dass es zuvor hatte, trägt
         printf("%X",b);                       // b wird als Hexadezimalzahl ausgegeben, also 0, wenn es jetzt den Wert 0 trägt, oder 1, wenn es jetzt den Wert 1 trägt
         if ((i%8) == 0) printf(" ");          // Es werden immer 8 Bits in Gruppen ausgegeben (fűr die Lesbarkeit), indem alle 8 Bits ein Leerzeichen ausgegeben wird
