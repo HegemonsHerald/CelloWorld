@@ -1,0 +1,26 @@
+
+
+
+one tab between everything, except the comments, those get two, or one on long codes
+
+
+Syntax highlighting:
+
+COMMENT		= '/.*$'			=> /....	=> grey
+OPCODE		= list of OPCODES		=> opcode	=> red
+REGISTER	= 'R[0-9]\{2}'			=> R01		=> orange
+LITERAL		= '#[0-9]*'			=> #92834	=> green
+DISPLACEMENT	= '[0-9]\{4}('.REGISTER.')'	=> 0088(R01)	=> pink
+LABEL		= everything else		=> everything else		=> blue
+
+
+
+	ADD	R3,R0,R0	/ set helper register result
+	ADD	R1,R0,R0	/ set helper register boolean flag
+
+	ADD	R3,R2,R0	/ copy num to helper register
+DO:	SLTI	R1,R3,#15	/ check if num has become smaller than 15
+	BNEZ	R1,DONE		/ if so, jump to end
+	SUBI	R3,R3,#15	/ else, subtract 15 from num
+	J	DO		/ keep doing that, til jump to end
+DONE:	HALT

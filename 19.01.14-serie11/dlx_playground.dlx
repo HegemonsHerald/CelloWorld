@@ -1,0 +1,26 @@
+
+/ Right this almost works
+/ Now I just need to figure out the color scheme settings, so I can really emulate the tool, we're using
+/ And figure out the catch-all
+/ I think Normal may be useful there, I'm gonna check If I can make NOrmal have a specific color set...
+Label: ADD R01,R02,#987 / comment string
+Whoo: addi R99,R19,0000 0000(R12), hong,#9879
+
+/ really, this is funo
+
+for (expr) while (expr)
+for (expr) for (expr) while (expr)
+for (expr) for (expr) for (expr) while (expr)
+for (lksdjf) while (
+
+A\@<=   match right after A
+A\@<=B  match B in AB, but not just B
+
+/ you need to write stuff about how to make syntax things
+/       - how to make syntax groups
+/       - how to make hi groups
+/       - how to conf hi groups
+/       - colorschemes
+
+
+A\@<!B  match any B, that doesn't have A before it, so match B but not AB
