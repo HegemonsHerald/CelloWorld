@@ -1,10 +1,8 @@
-
 / R01 enthalte Zahl a
 / R02 enthalte Zahl b
 
 / R03 sei Zahl c
 / R04 sei Zahl d
-
 / R05 sei boolean flag
 
 ADD	R05,R00,R00
@@ -15,7 +13,7 @@ ADD	R04,R00,R02	/ d = b
 Loop:	SNE	R05,R03,R04	/ c != d ?
 	BEQZ	R05,End		/ If not (so ==), End
 	SLT	R05,R03,R04	/ c < d?
-	BNEZ	R05,d_gt_c	/ if d > c adjust c
+	BNEZ	R05,d_gt_c	/ if d greater than c
 
 / If c is greater than d:
 ADD	R04,R04,R02	/ d += b

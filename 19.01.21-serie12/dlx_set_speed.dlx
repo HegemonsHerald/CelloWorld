@@ -1,0 +1,7 @@
+You can use
+
+  DLX.Settings.PLAY_DELAY
+
+to set the milliseconds delay between execution steps during 'Play'.
+
+Set it to 0 for the fastest it goes.
