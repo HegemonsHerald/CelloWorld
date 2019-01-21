@@ -1,0 +1,58 @@
+/* An Explanation */
+/ The ASCII Code puts all its codes in a numbered list. In that list, there are
+/ ranges of associated characters.
+/ The uppercase alphabetic letters start at code 65 and ends at code 90. There are a
+/ couple of extra characters following this range.  The lowercase letters follow
+/ starting at code 97 and end at code 129.
+/ Since in both ranges the letters are in order, one can use the offset 32 to
+/ convert a letter into its reverse-case counterpart. To go from upper to lower
+/ case, add 32, from lower to upper case, subtract 32.  To implement the task one
+/ only still needs to check, that a character isn't already lowercase, so one
+/ doesn't accidentally add 32 to the code of a valid lowercase character.
+
+/ In this implementation we make the assumption, that all input characters are from
+/ the valid ranges of letters.
+
+/ Since the task is to convert a list of characters, the program loops. During each
+/ iteration another character is tackled. To do that, the program keeps track of how
+/ far it got using a counter register, which is compared to the number of characters
+/ to convert. Parallely to that the program keeps track of the address of the
+/ character to work on, during the current iteration. Using that address one also
+/ computes the target address, by offsetting it with 1000 again.
+
+/* Preconditions */
+
+/ R01 contains the number of characters to operate on
+/ The range Mem[1000..1000+(R01*4)] contains the ASCII codes to operate on
+/ The resulting characters should be written to the range Mem[2000..2000+(R01*4)]
+/ The input characters are all valid ASCII codes from the range of alphabet
+/ letters.
+
+/* Init data stuffsies */
+
+/ R01	Number of characters to convert, starting from 1000
+/ R02	Number of characters converted
+/ R03	Pointer to currently to-be-converted character
+/ R04	Boolean Flag: did you reach the end of Loop?
+/ R05	Boolean Flag: is the character upper or lower case?
+/ R06	Result of conversion
+
+ADD	R02,R00,R00
+ADDI	R03,R00,#1000	/ The character source space starts at address 1000
+ADD	R04,R00,R00
+ADD	R05,R00,R00
+ADD	R06,R00,R00
+
+/* The thing */
+
+Loop:	SLT	R04,R02,R01		/ Have you reached beyond the last char?
+	BEQZ	R04,End			/ If so, End
+	LW	R06,0(R03)		/ Load the current character
+	SLTI	R05,R06,#97		/ Is the char already lower-case?
+	BEQZ	R05,Write		/ If it is, don't do anything
+	ADDI	R06,R06,#32		/ If it isn't, make it be!
+Write:	SW	1000(R03),R06		/ Write the 'new' char to memory
+	ADDI	R03,R03,#4		/ Update Pointer to next character
+	ADDI	R02,R02,#1		/ Update the visited characters
+	J	Loop			/ Do it all again
+End:	HALT

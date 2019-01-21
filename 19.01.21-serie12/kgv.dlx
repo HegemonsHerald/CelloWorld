@@ -1,0 +1,29 @@
+
+/ R01 enthalte Zahl a
+/ R02 enthalte Zahl b
+
+/ R03 sei Zahl c
+/ R04 sei Zahl d
+
+/ R05 sei boolean flag
+
+ADD	R05,R00,R00
+ADD	R03,R00,R01	/ c = a
+ADD	R04,R00,R02	/ d = b
+
+/ Start program
+Loop:	SNE	R05,R03,R04	/ c != d ?
+	BEQZ	R05,End		/ If not (so ==), End
+	SLT	R05,R03,R04	/ c < d?
+	BNEZ	R05,d_gt_c	/ if d > c adjust c
+
+/ If c is greater than d:
+ADD	R04,R04,R02	/ d += b
+J	Loop
+
+/ If d is greater than c:
+d_gt_c:
+ADD	R03,R03,R01	/ c += a
+J	Loop
+
+End:	Halt
