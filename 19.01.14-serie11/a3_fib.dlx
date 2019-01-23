@@ -1,0 +1,76 @@
+/* An Explanation */
+
+/ The fibonacci sequence is defined recursively with a dependancy on the two
+/ fibonacci numbers, that precede the current one.
+/ That means one can easily compute fib(n) if one knows fib(n-1) and fib(n-2).
+/ Instead of recurring using a sub-program and a stack, we opted to simply loop,
+/ while remembering the previous two fibonacci numbers.
+
+/ We store those two fibonacci numbers in the registers R2 and R3, where R2 holds
+/ the value or fib(n-2) and R3 the value of fib(n-1).
+
+/ To compute the next fibonacci number we then add the values of R2 and R3 and
+/ store the result into R3. R3 now holds the value of fib(n). R2 still needs to
+/ be updated, so that on the next iteration it again holds the value fib(n-2)
+/ relative to the n, that's to be tackled then. R2 needs to be assigned the value
+/ R3 had, before the addition of R2 and R3. To do that, we assign the value of
+/ R3 - R2 to R2, which yields the original value of R3. Perhaps a little bit more
+/ clearly:
+
+/   R2 = a
+/   R3 = b
+
+/   R3 = a+b
+
+/   R2 = R3 - R2 = (a+b) - a = b
+
+/   R2 = b
+/   R3 = a+b
+
+/   where a = fib(n-2), b = fib(n-1) and a+b = fib(n)
+
+/ We are also supposed to check for integer overflow. To do that, on each
+/ iteration we bitshift the current fib(n) 31 bits to the right, effectively
+/ moving its MSB to the LSB-position.  Then we compare the resulting number
+/ against 0. If the number was still in range, after the shift it will be equal
+/ to exactly 0. If it isn't in range anymore, its MSB must be 1, so the shifted
+/ number won't equal 0.  After that it's a simple conditional jump to a HALT
+/ command to terminate the program.
+
+
+/* The Register Layout */
+
+/ R1	The n from fib(n)
+/ R2	fib(n-1)
+/ R3	fib(n)
+/ R4	The address to write fib(n) to
+/ R5	Boolean flag for the overflow check
+
+
+/* Init and handle fib(1) and fib(2) */
+
+ADDI	R1,R0,#2	/ Start at n=2, so the first fib computed will be fib(3)
+ADDI	R2,R0,#1	/ fib(n-1) = fib(1) = 1
+ADDI	R3,R0,#1	/ fib(n)   = fib(2) = 1
+ADDI	R4,R0,#1008	/ The address to write to, starts at fib(3)'s address
+ADD	R5,R0,R0	/ Overflow flag
+
+SW	1000(R0),R2	/ Store fib(1) in 1000
+SW	1004(R0),R3	/ Store fib(2) in 1004
+
+
+/* Start comoputation at fib(3) */
+
+Fib:	ADD	R3,R2,R3	/ Compute new fibonacci number
+	SUB	R2,R3,R2	/ Swap for previous fibonacci number
+
+	SRLI	R5,R3,#31	/ Is the new fib a negative number now?
+	BNEZ	R5,End		/ If it is, you're done
+
+	SW	0000(R04),R3	/ Store new fibonacci number
+	ADDI	R4,R4,#4	/ Increase the address
+	ADDI	R1,R1,#1	/ Keep track of how far you got (increase n)
+
+	J Fib			/ Repeat.
+
+End:	HALT

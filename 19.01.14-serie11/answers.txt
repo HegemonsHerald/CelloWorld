@@ -1,0 +1,22 @@
+
+- SRA = Ganzzahlige Division mit 2
+
+- 16 Bit Zahlen also [(-2^16)/2 .. (2^16)/2 -1] oder [-32768 .. 32767]
+
+- LW reads a 32 Bit number from Memory, so that would be 4 bytes (1 word in
+  our DLX-Assembler), although one could argue that also the 32 Bits of the
+  register, that figures into the immediate addressing of the memory position
+  to read, are read, that would be another 4 bytes, as well as the actual
+  instruction, which in and of itself has a length of 4 bytes.
+  So LW reads 32 Bits or 4 bytes from memory, and in total touches readingly
+  upon 12 bytes in various places.
+  SW uses addresses divisible by 4 because in memory you want to store whole
+  words (in our DLX assembler always 32 bits or 4 bytes). If you wish to not
+  confuse your program, you keep these memory values properly aligned, so
+  always address with multiples of four, so you can start indexing at e.g. 0
+  or 1000. A nice round easy-to-use number. align=ausrichten
+
+- JAL schreibt den aktuellen Next Program Counter, also die Rűcksprung-
+  addresse nach R31.
+  In unserem DLX-Assembler ist das die Nummer der Zeile, die nach dem JAL
+  Aufruf kommt (die Zeile des JAL plus 1).

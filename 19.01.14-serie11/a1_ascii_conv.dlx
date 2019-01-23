@@ -1,4 +1,5 @@
 /* An Explanation */
+
 / The ASCII Code puts all its codes in a numbered list. In that list, there are
 / ranges of associated characters.
 / The uppercase alphabetic letters start at code 65 and ends at code 90. There are a
@@ -10,36 +11,47 @@
 / only still needs to check, that a character isn't already lowercase, so one
 / doesn't accidentally add 32 to the code of a valid lowercase character.
 
+/ The task description specifies, that the value l should be the length of
+/ the charater sequence to convert. Since we were assured, that l won't be
+/ longer than 1000, we take this to mean, that l is the length of the
+/ sequence in bytes. Eg: 5 characters would be 5 * 4 Bytes, so l = 20 Bytes.
+
 / In this implementation we make the assumption, that all input characters are from
 / the valid ranges of letters.
 
 / Since the program has to operate on a list of characters, it loops.
-/ We compute the address of the character after the last character to
-/ convert so we can use it as a reference to know, when to stop looping. Then we
-/ can just store the address of the character we're currently working on, and
-/ compare that with the reference address.
+/ We keep track of the address of the character, we're currently working on.
+/ We also compute the address of the character after the last character to
+/ convert, so we can use it as a reference to know, when to stop looping.
+/ That address is computed by adding 1000 to the number in R1. The result of that
+/ addition will will always be be an aligned address, because the task tells us,
+/ that we can assume the ASCII sequence to be made of whole words.
+/ Now we just need to compare the current character pointer to the address after
+/ the last address of the character sequence, to know when to stop looping.
+
+
+/* Register Layout */
+
+/ R01	The address after the address of the last character
+/ R02	The address of the current character
+/ R03	Boolean flag register for both the loop condition and the conversion
+/       condition
+/ R04	The result of the conversion
 
 
 /* Preconditions */
 
-/ R01 contains the number of characters to operate on
-/ The range Mem[1000..1000+(R01*4)] contains the ASCII codes to operate on
-/ The resulting characters should be written to the range Mem[2000..2000+(R01*4)]
+/ R01 contains the number of bytes in all the characters to operate on
+/ The range Mem[1000..1000(R01)-4] contains the ASCII codes to operate on
+/ The resulting characters should be written to the range Mem[2000..2000(R01)-4]
 / The input characters are all valid ASCII codes from the range of alphabet
 / letters.
 
 
-/* Init data stuffsies */
-
-/ R01	The address after the address of the last character
-/ R02	The address of the current character
-/ R03	Boolean flag register
-/ R04	The result of the conversion
+/* Init registers */
 
 / Figure out end-address
-ADDI	R02,R00,#4	/ Helper for MULT
-MULT	R01,R01,R02	/ Multiply number of characters with 4 (cause word-length)
-ADDI	R01,R01,#1000	/ Add 1000 to create address after last character
+ADDI	R01,R01,#1000	/ Add 1000 to l to create address after last character
 			/ (characters start at 1000)
 
 / Figure out the rest
@@ -48,8 +60,7 @@ ADD	R03,R00,R00	/ Boolean flag
 ADD	R04,R00,R00	/ Result of conversion
 
 
-
-/* The thing */
+/* The Conversion */
 
 Loop:	SLT	R03,R02,R01		/ Have you reached beyond the last char?
 	BEQZ	R03,End			/ If so, End
@@ -57,7 +68,7 @@ Loop:	SLT	R03,R02,R01		/ Have you reached beyond the last char?
 	SLTI	R03,R04,#97		/ Is the char already lower-case?
 	BEQZ	R03,Write		/ If it is, don't do anything
 	ADDI	R04,R04,#32		/ If it isn't, make it be!
-Write:	SW	1000(R02),R04		/ Write the final char to memory
+Write:	SW	1000(R02),R04		/ Write the possibly converted char to memory
 	ADDI	R02,R02,#4		/ Update Pointer to next character
 	J	Loop			/ Do it all again
 End:	HALT
