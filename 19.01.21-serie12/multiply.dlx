@@ -4,7 +4,7 @@
 / factors to multiply.
 
 / It proceeds to loop while the factor n is bigger than 0. This condition is
-/ simply checked by comparing n to r0. If n isn't bigger than 0, the program
+/ simply checked by comparing n to R0. If n isn't bigger than 0, the program
 / will terminate.
 
 / Now the program has to check, whether n is even or odd. It does so, by
@@ -34,37 +34,37 @@
 
 /* Register Layout */
 
-/ r1	result
-/ r2	n
-/ r3	m
-/ r4	generic boolean register
+/ R1	result
+/ R2	n
+/ R3	m
+/ R4	generic boolean register
 
 
 /* Init Registers */
 
-add	r1,r0,r0	/ result = 0
-lw	r2,1000(r0)	/ load n
-lw	r3,1004(r0)	/ load m
-add	r4,r0,r0	/ generic boolean = 0
+ADD	R1,R0,R0	/ Result = 0
+LW	R2,1000(R0)	/ Load n
+LW	R3,1004(R0)	/ Load m
+ADD	R4,R0,R0	/ Generic boolean = 0
 
 
 /* Do the Algorithm */
 
-Loop:	slt	r4,r0,r2	/ 0 < n ?
-	beqz	r4,End		/ if false, you're done!
+Loop:	SLT	R4,R0,R2	/ 0 < n ?
+	BEQZ	R4,End		/ If false, you're done!
 
-	andi	r4,r2,#1	/ n even? That is: n `and` 1 == 0?
-	beqz	r4,EVEN		/ n is even!
+	ANDI	R4,R2,#1	/ n even? That is: n `and` 1 == 0?
+	BEQZ	R4,EVEN		/ n is even!
 
 	// n is odd
-ODD:	add	r1,r1,r3	/ result = result + m
-	subi	r2,r2,#1	/ n = n - 1
-	j	Loop
+ODD:	ADD	R1,R1,R3	/ Result = result + m
+	SUBI	R2,R2,#1	/ n = n - 1
+	J	Loop
 
 	// n is even
-EVEN:	add	r3,r3,r3	/ m = m + m
-	srai	r2,r2,#1	/ n = n / 2
-	j	Loop
+EVEN:	ADD	R3,R3,R3	/ m = m + m
+	SRAI	R2,R2,#1	/ n = n / 2
+	J	Loop
 
-End:	sw	1008(r0),r1	/ write the result to memory
-	halt
+End:	SW	1008(R0),R1	/ Write the result to memory
+	HALT

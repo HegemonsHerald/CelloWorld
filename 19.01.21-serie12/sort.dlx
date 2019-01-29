@@ -28,16 +28,16 @@
 / register, or it re-loads b into register 3, then writes a into the memory
 / position of b and b into the memory position, where a came from, effectively
 / swapping the two. After that the program will jump to its end, restore the
-/ registers and jump back with r31, as well.
+/ registers and jump back with R31, as well.
 
 
 /* The Register Layout */
 
-/ r1	The address at which the first of the two words to sort, can be found.
-/	The second word comes right after at r1+4. This is the expected argument.
+/ R1	The address at which the first of the two words to sort, can be found.
+/	The second word comes right after at R1+4. This is the expected argument.
 
-/ r2	The first of the two numbers, called 'a'
-/ r3	The second of the two numbers, called 'b', also used as the boolean
+/ R2	The first of the two numbers, called 'a'
+/ R3	The second of the two numbers, called 'b', also used as the boolean
 /	value for the size comparison 'b > a'
 
 
@@ -45,29 +45,29 @@
 
 SORT:
         // Save registers
-        sw 0(r30),r2            / save whatever's in r2
-        sw 4(r30),r3            / save whatever's in r3
+        SW 0(R30),R2            / Save whatever's in R2
+        SW 4(R30),R3            / Save whatever's in R3
 
         // Load a and b
-        / r1 contains the first address to load from
-        lw r2,0(r1)             / load a
-        lw r3,4(r1)             / load b
+        / R1 contains the first address to load from
+        LW R2,0(R1)             / Load a
+        LW R3,4(R1)             / Load b
 
         // Sort a and b
-        slt r3,r3,r2            / b < a ?
-        bnez r3,sort_swap       / if so, swap!
-        j sort_end              / else, there's nothing to do
+        SLT R3,R3,R2            / b < a ?
+        BNEZ R3,sort_swap       / If so, swap!
+        J sort_end              / Else, there's nothing to do
 
         // Swap a and b in memory
 sort_swap:
-        lw r3,4(r1)             / load b (again)
-        sw 0(r1),r3             / write b into a's address
-        sw 4(r1),r2             / write a into b's address
+        LW R3,4(R1)             / Load b (again)
+        SW 0(R1),R3             / Write b into a's address
+        SW 4(R1),R2             / Write a into b's address
 
         // Restore the registers and return
 sort_end:
-        lw r2,0(r30)            / restore r2
-        lw r3,4(r30)            / restore r3
-        jalr r31                / jump back to main program (return)
+        LW R2,0(R30)            / Restore R2
+        LW R3,4(R30)            / Restore R3
+        JALR R31                / Jump back to main program (return)
 
 /= END: SORT function =========================================================/

@@ -1,25 +1,48 @@
+/* Bubblesort */
 
+/ This program contains the two loops as specified in the task. Since those are
+/ loops, that count up or down to reach a certain value, there is not much
+/ complexity to explain there. The loops merely start with their respective
+/ counter variables set to their initial values, run through the code they are
+/ to execute, edit their counters and check, whether the edited counters still
+/ satisfy the loop condition to then possibly jump back to the beginning of the
+/ loop. Given the task the initial values do always satisfy the condition,
+/ because the length of the list n is defined as being larger than 1. That
+/ means, we don't have to check the loop condition at the beginning of the loop.
 
+/ Since this program uses the SORT program as a sub-program, we of course have
+/ to manage a call-stack. We chose to store the stack pointer (Top of Stack) in
+/ register 30.
 
+/ The call process (marked with START: CALL to SORT) then works as follows:
+/ first the main program saves register R1 on the stack. It's the argument
+/ register to SORT and will be overwritten during the call process.
+/ Then the main program computes the physical address of the first of the values
+/ to SORT and stores that in R1. Then it jumps to the beginning of SORT, storing
+/ the return address in the jump register (R31).
+/ The process of SORT is detailed in the SORT program's file.
+/ After SORT returns, i.e. jumps back, the main program restores its register 1
+/ and continues with the inner loop.
 
-/ It is assumed, that R1 contains the length of the list, as in the number of
+/ It is assumed, that R1 contains the length of the list, that is the number of
 / elements the list contains.
+
 
 /* Register Layout */
 
-r1      length of the list to sort, used as i
-r2      counter variable j
-r3      general purpose (boolean, helper operations), will be called 'g'
-r30     stack pointer (Top of Stack)
+/ R1      length of the list to sort, used as 'i'; parameter to SORT ('p')
+/ R2      counter variable 'j'
+/ R3      general purpose (boolean, helper operations), will be called 'g'
+/ R30     stack pointer (Top of Stack)
 
 
 /***************************** START: BUBBLESORT ******************************/
 
 // Init Registers
 
-add     r2,r0,r0        / j = 0
-add     r3,r0,r0        / g = 0
-addi    r30,r0,#1000    / TOS = 1000
+ADD     R2,R0,R0        / j = 0
+ADD     R3,R0,R0        / g = 0
+ADDI    R30,R0,#1000    / TOS = 1000
 
 
 /= START: Outer loop ==========================================================/
@@ -27,66 +50,58 @@ outer_loop:
 
 
 /= START: Inner loop ==========================================================/
-// reset j to 0
-add     r2,r0,r0
+// Reset j to 0
+ADD     R2,R0,R0
 
 inner_loop:
 
-/= ===== START: CALL to SORT ==================================================/
+/======= START: CALL to SORT ==================================================/
         
         // Push registers to stack
-        sw      0(r30),r1
-        sw      4(r30),r2
-        sw      8(r30),r3
-        
+        SW      0(R30),R1
+
         // Set argument to SORT
-        
         / Compute the offset of the i-th element of the list in bytes
-        addi    r3,r0,#4        / g = 4
-        mult    r3,r2,r3        / g = g * i = 4 * i
+        ADDI    R1,R0,#4        / p = 4
+        MULT    R1,R2,R1        / p = p * i = 4 * i
         
         / Apply the offset to the beginning of the list, to produce the
-	/ address of the i-th element of the list
-        addi    r3,r3,#1200     / g = g+1200 = 1200 + 4 * i
-        
-	/ set r1 (the argument) to the address of the i-th element
-        add     r1,r0,r3
+	/ Address of the i-th element of the list
+        ADDI    R1,R1,#1200     / p = p + 1200 = 1200 + 4 * i
         
         // Increase TOS
-        addi    r30,r30,#12     / pushed 3 words, so increase by 3+1 steps
+        ADDI    R30,R30,#12     / Pushed 3 words, so increase with 3+1 words
         
         // Call SORT
-        jal     SORT
+        JAL     SORT
         
         // Decrease TOS
-        subi    r30,r30,#12
+        SUBI    R30,R30,#12
         
         // Pop registers from stack
-        lw      r1,0(r30)
-        lw      r2,4(r30)
-        lw      r3,8(r30)
+        LW      R1,0(R30)
 
-/= ===== END: CALL to SORT ====================================================/
+/======= END: CALL to SORT ====================================================/
 
 // Continue looping the inner loop or break?
-addi    r2,r2,#1        / j++
-subi    r3,r1,#1        / g = i-1
-slt     r3,r2,r3        / j < g? which is equivalent to j < i-1?
-bnez    r3,inner_loop   / If true, you must repeat!
-                        / If false, continue outer_loop
+ADDI    R2,R2,#1        / j++
+SUBI    R3,R1,#1        / g = i-1
+SLT     R3,R2,R3        / j < g? which is equivalent to j < i-1?
+bnez    R3,inner_loop   / If 1, you must repeat!
+                        / If 0, continue outer_loop
 
 /= END: Inner loop ============================================================/
 
 
 // Continue looping the outer loop or is the program done?
-subi    r1,r1,#1        / i--
-seqi    r3,r1,#1        / i == 1 ?
-beqz    r3,outer_loop   / If false, the list isn't yet sorted!
-                        / If true, End
+SUBI    R1,R1,#1        / i--
+SEQI    R3,R1,#1        / i == 1 ?
+BEQZ    R3,outer_loop   / If 0, the list isn't yet sorted!
+                        / If 1, End
 
 /= END: Outer loop ============================================================/
 
-End:    Halt
+End:    HALT
 
 /****************************** END: BUBBLESORT *******************************/
 
@@ -95,29 +110,29 @@ End:    Halt
 
 SORT:
         // Save registers
-        sw 0(r30),r2            / save whatever's in r2
-        sw 4(r30),r3            / save whatever's in r3
+        SW 0(R30),R2            / Save whatever's in R2
+        SW 4(R30),R3            / Save whatever's in R3
 
         // Load a and b
-        / r1 contains the first address to load from
-        lw r2,0(r1)             / load a
-        lw r3,4(r1)             / load b
+        / R1 contains the first address to load from
+        LW R2,0(R1)             / Load a
+        LW R3,4(R1)             / Load b
 
         // Sort a and b
-        slt r3,r3,r2            / b < a ?
-        bnez r3,sort_swap       / if so, swap!
-        j sort_end              / else, there's nothing to do
+        SLT R3,R3,R2            / b < a ?
+        bnez R3,sort_swap       / If so, swap!
+        J sort_end              / Else, there's nothing to do
 
         // Swap a and b in memory
 sort_swap:
-        lw r3,4(r1)             / load b (again)
-        sw 0(r1),r3             / write b into a's address
-        sw 4(r1),r2             / write a into b's address
+        LW R3,4(R1)             / Load b (again)
+        SW 0(R1),R3             / Write b into a's address
+        SW 4(R1),R2             / Write a into b's address
 
         // Restore the registers and return
 sort_end:
-        lw r2,0(r30)            / restore r2
-        lw r3,4(r30)            / restore r3
-        jalr r31                / jump back to main program
+        LW R2,0(R30)            / Restore R2
+        LW R3,4(R30)            / Restore R3
+        jalr R31                / Jump back to main program
 
 /= END: Sort function =========================================================/
