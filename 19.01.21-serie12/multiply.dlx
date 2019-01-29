@@ -1,0 +1,70 @@
+/* Mutliply like the egyptians did */
+
+/ This program -- like any program -- first sets up its registers, loading the
+/ factors to multiply.
+
+/ It proceeds to loop while the factor n is bigger than 0. This condition is
+/ simply checked by comparing n to r0. If n isn't bigger than 0, the program
+/ will terminate.
+
+/ Now the program has to check, whether n is even or odd. It does so, by
+/ inspecting only the least significant bit of n, by `and`-ing n with 1. If the
+/ LSB is 0 then n is even, else it's odd.
+
+/ If n is even, the program adds m to itself to double it, and divides n by 2 by
+/ shifting it right using the arithmetic shift.
+
+/ If n is odd, the program adds m to the result register and subtracts 1 from n.
+
+/ In either case the program then jumps back to the beginning of the loop.
+
+/ Right before terminating the program still writes its result value to the
+/ memory position after the second factor. Since there are two factors starting
+/ at address 1000, that would be 1008.
+
+
+/ For this program and this algorithm to work n must be larger or equal to 0. If
+/ n is negative the result will always be 0. The factor m may be negative.
+
+/ It shall also be noted, that we assume the two factors to be stored as whole
+/ words in memory, as it wasn't explicitely specified. If the factors were
+/ significantly smaller than 2^30, they might just be single bits or bytes,
+/ stored all in one word.
+
+
+/* Register Layout */
+
+/ r1	result
+/ r2	n
+/ r3	m
+/ r4	generic boolean register
+
+
+/* Init Registers */
+
+add	r1,r0,r0	/ result = 0
+lw	r2,1000(r0)	/ load n
+lw	r3,1004(r0)	/ load m
+add	r4,r0,r0	/ generic boolean = 0
+
+
+/* Do the Algorithm */
+
+Loop:	slt	r4,r0,r2	/ 0 < n ?
+	beqz	r4,End		/ if false, you're done!
+
+	andi	r4,r2,#1	/ n even? That is: n `and` 1 == 0?
+	beqz	r4,EVEN		/ n is even!
+
+	// n is odd
+ODD:	add	r1,r1,r3	/ result = result + m
+	subi	r2,r2,#1	/ n = n - 1
+	j	Loop
+
+	// n is even
+EVEN:	add	r3,r3,r3	/ m = m + m
+	srai	r2,r2,#1	/ n = n / 2
+	j	Loop
+
+End:	sw	1008(r0),r1	/ write the result to memory
+	halt

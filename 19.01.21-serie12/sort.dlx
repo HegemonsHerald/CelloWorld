@@ -1,0 +1,73 @@
+/* The Sort Function or sub-program */
+
+/ As per requirements this function expects to find its argument
+/ - the address from which to draw two numbers, to possibly swap the order of -
+/ in register 1.
+
+/ Since this function is to be used as a sub-program, the first thing it does is
+/ save the registers it uses during its operation.
+
+/ The function only changes 2 registers, so it only saves and later restores
+/ those 2 registers.
+
+/ After the registers have been pushed to the stack, the first of the two words,
+/ that are to be sorted, is loaded into register 2. That word will be called 'a'.
+/ Next the second word is loaded into register 3. That word will be called 'b'.
+
+/ Afterwards the two words are compared using 'b > a'. The result of this
+/ comparison overwrites b in register 3. The reasoning for that is this:
+/ If a and b are in the correct order, now the registers only need to be
+/ restored.
+/ If they aren't, one must re-load b into register 3 in order to write it, which
+/ adds one instruction. But using an extra boolean register would add two
+/ instructions, one for saving and one for restoring the boolean register.
+/ So either way, overwriting register 3 gets away with fewer instructions.
+
+/ Based on the outcome of the comparison the program either jumps to its end,
+/ where it restores the used registers and jumps back to the value in the jump
+/ register, or it re-loads b into register 3, then writes a into the memory
+/ position of b and b into the memory position, where a came from, effectively
+/ swapping the two. After that the program will jump to its end, restore the
+/ registers and jump back with r31, as well.
+
+
+/* The Register Layout */
+
+/ r1	The address at which the first of the two words to sort, can be found.
+/	The second word comes right after at r1+4. This is the expected argument.
+
+/ r2	The first of the two numbers, called 'a'
+/ r3	The second of the two numbers, called 'b', also used as the boolean
+/	value for the size comparison 'b > a'
+
+
+/= START: SORT function (or sub-program) ======================================/
+
+SORT:
+        // Save registers
+        sw 0(r30),r2            / save whatever's in r2
+        sw 4(r30),r3            / save whatever's in r3
+
+        // Load a and b
+        / r1 contains the first address to load from
+        lw r2,0(r1)             / load a
+        lw r3,4(r1)             / load b
+
+        // Sort a and b
+        slt r3,r3,r2            / b < a ?
+        bnez r3,sort_swap       / if so, swap!
+        j sort_end              / else, there's nothing to do
+
+        // Swap a and b in memory
+sort_swap:
+        lw r3,4(r1)             / load b (again)
+        sw 0(r1),r3             / write b into a's address
+        sw 4(r1),r2             / write a into b's address
+
+        // Restore the registers and return
+sort_end:
+        lw r2,0(r30)            / restore r2
+        lw r3,4(r30)            / restore r3
+        jalr r31                / jump back to main program (return)
+
+/= END: SORT function =========================================================/

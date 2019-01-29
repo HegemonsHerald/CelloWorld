@@ -1,0 +1,65 @@
+// INIT stack pointer
+addi r30,r0,#1000
+
+// set some values in registers
+addi r1,r0,#42
+addi r2,r0,#42
+addi r3,r0,#42
+addi r4,r0,#42
+addi r5,r0,#42
+
+/* Make a function call */
+
+// save registers and jump reg
+sw 00(r30),r31	// THIS IS ONLY NECESSARY IF JUMP REG HAS ALREADY BEEN USED!!!
+sw 04(r30),r1
+
+// write parameters
+addi r1,r0,#1200
+
+// increase stack pointer
+addi r30,r30,#20
+
+// SORT(addr)
+jal SORT
+
+// decrease stack pointer
+subi r30,r30,#20
+
+// restore registers
+lw r31,0(r30)
+lw r1,04(r30)
+j end
+
+/* START: Sort function (or sub-program) */
+
+SORT:
+	// Save registers
+	sw 0(r30),r2		/ save whatever's in r2
+	sw 4(r30),r3		/ save whatever's in r3
+	sw 8(r30),r4		/ save whatever's in r4
+
+	// Load a and b
+	/ r1 contains the first address to load from
+	lw r2,0(r1)		/ load a
+	lw r3,4(r1)		/ load b
+
+	// Sort a and b
+	slt r4,r3,r2		/ b < a ?
+	bnez r4,sort_swap	/ if so, swap!
+	j sort_end		/ else, there's nothing to do
+
+	sort_swap:
+	sw 0(r1),r3		/ write b into a's address
+	sw 4(r1),r2		/ write a into b's address
+
+	// Restore the registers and return
+	sort_end:
+	lw r2,0(r30)		/ restore r2
+	lw r3,4(r30)		/ restore r3
+	lw r4,8(r30)		/ restore r4
+	jalr r31		/ jump back to main program
+
+/* END Sort function */
+
+end: halt
