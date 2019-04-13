@@ -1,0 +1,97 @@
+A bitmask is used to find out the state of bits in a source number.
+
+A bitmask is a number, that has 1s on all the bits, you want to know the state of, and 0es on all other bits.
+By applying the bitmask to the source number, by using the bitwise AND, all the bits of the source number,
+that are 0 in the bitmask will be turned to 0. All the bits of the source number, that are 1 in the bitmask,
+will be turned to what their value in the source number is.
+
+Sidenote: bitwise AND applies the AND operation on each bit of source and mask number.
+	  The AND operation requires both operands to yield true for its return value to be true.
+	  The AND operation does this:
+
+		0 & 0 = 0
+		0 & 1 = 0
+		1 & 0 = 0
+		1 & 1 = 1
+
+
+Examples illustrate all this better
+
+1)
+	number  11111111111111111111111111111
+	bitmask 00000001111111110000000000000
+		       |||||||||
+	masked- 00000001111111110000000000000
+	number
+
+2)
+	number  00001010101111010011111000110
+	bitmask 00000001111111110000000000000
+		       |||||||||
+	masked- 00000000101111010000000000000
+	number
+
+
+If you want to know the value of one specific bit of a source number, you simply create a bitmask, that has just one 1 bit,
+and otherwise only 0 bits. For example, to find out the MSB-state of a number you can do the following.
+
+3)
+
+	MSB is 0:
+	number  00001010101111010011111000110
+	bitmask 10000000000000000000000000000
+		|
+	masked- 00000000000000000000000000000
+	number
+
+	MSB is 1:
+	number  10000101000000100010101011101
+	bitmask 10000000000000000000000000000
+		|
+	masked- 10000000000000000000000000000
+	number
+
+If you then compare the masked number to 0, you'll get true if the MSB is 0 and false if the MSB is 1.
+
+
+In general the masking operation is:
+
+	number:		n
+	mask:		m
+	
+	masked number:	n & m
+
+For the MSB operation it is:
+
+	number of digits in n:	N
+	number:			n
+	mask:			1 << N		// move the 1 from the LSB to the MSB using left bitshift (see examples below)
+
+	masked number:		n & (1 << N)
+				n & 1 << N	// you can do this directly, cause '<<' binds more strongly than '&' [precedence]
+
+Examples for MSB:
+
+1)
+	N = 4
+	n = 1010
+	
+	1010 &    1 << 4
+	1010 & 0001 << 4
+	1010 & 1000
+	
+	 1010
+	&1000
+	=1000
+
+2)
+	N = 4
+	n = 0011
+
+	0011 &    1 << 4
+	0011 & 0001 << 4
+	0011 & 1000
+
+	 0011
+	&1000
+	=0000
