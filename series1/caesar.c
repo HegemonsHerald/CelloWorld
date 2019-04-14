@@ -16,6 +16,8 @@ char encode(char c) {
 		: c ;
 }
 
+/* How to do it almost properly...
+
 int main( int argc, char *argv[] ) {
 
 	// handle error case
@@ -36,3 +38,65 @@ int main( int argc, char *argv[] ) {
 
 	return 0;
 }
+*/
+
+
+/* How to do it as just one large expression!
+
+void encode_arg(char string[]) {
+
+	for(int i=0
+	  ; string[i] != '\0'
+	  ; printf("%c", encode(string[i])), i++) {}
+
+	printf("\n");
+
+}
+
+#define ERR_MSG "error message, yup\n"
+
+int main( int argc, char *argv[] ) {
+	return    argc == 1 ? printf("%s", ERR_MSG), -1
+		: encode_arg(argv[1]), 0;
+}
+
+*/
+
+
+/* Now for TAIL CALLS, so NO FUCKING FOR LOOPS! */
+
+
+// Re-Clarifications on pointers, cause they really turn confusing quickly when using arrays and shit
+// 1. you have values and you have pointers to values (variables holding references).
+// 2. if you have a value, you can get its address using &value
+// 3. you make a pointer by declare <type> * <name>, where <type> is the type the pointer points to
+// 4. an array is a pointer to the first element of the array
+// 5. the argv array is an array of strings, which are themselves arrays, so it must be a pointer to a pointer or pointers --> either char ** argv or char * argv []
+// 6. you pass a reference to the first element of argv by using argv directly
+// 7. you pass a reference to the first char of the first element of argv by using argv[0] or *argv
+//
+// A pointer to a char is the same as a string. An array of chars is a pointer to the first char, ergo a string is nothing but a char *.
+
+
+// this is the solution I want to hand in: it uses everything I love!
+//  - only return statements, no bolloks no one needs
+//  - tail recursion instead of fucking looping statments
+//  - ternary for conditionals so this is some real proper stuff
+//  - macros, cause you know, macros
+//  - best of all: pointer arithmetic, just cause!
+
+#define ERR_MSG "error message, yup\n"
+
+int encode_arg(char *c) {
+	return *c == '\0' ? ( printf("\n"), 0 )
+			  : ( printf("%c", encode(*c)), encode_arg(&c[1]) );
+}
+
+int main( int argc, char **argv ) {
+	return argc == 1 ? printf("%s", ERR_MSG), -1
+			 : encode_arg(argv[1]);
+}
+
+// test string to prove the bit with the tail calls and you know...
+// spoilers: it does not stack overflow
+// Here's a test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string test string
