@@ -88,13 +88,13 @@ int main( int argc, char *argv[] ) {
 #define ERR_MSG "error message, yup\n"
 
 int encode_arg(char *c) {
-	return *c == '\0' ? ( printf("\n"), 0 )
-			  : ( printf("%c", encode(*c)), encode_arg(&c[1]) );
+	return *c == '\0' ? ( printf("\n"), 0 )					// reach end of argv:	print newline and return successfully
+			  : ( printf("%c", encode(*c)), encode_arg(&c[1]) );	// otherwise:		encode character, print it, continue with next character
 }
 
 int main( int argc, char **argv ) {
-	return argc == 1 ? printf("%s", ERR_MSG), -1
-			 : encode_arg(argv[1]);
+	return argc == 1 ? printf("%s", ERR_MSG), -1	// no arg was given:	print error message, return unsuccessfully
+			 : encode_arg(argv[1]);		// otherwise:		print the arg encoded
 }
 
 // test string to prove the bit with the tail calls and you know...
