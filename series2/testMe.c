@@ -45,11 +45,17 @@
 // expands into the LENGTH VARIABLE of an array made with mk_array
 #define len(arr)	len_of_ ## arr
 
-
-
 /* THIS IS WHERE THE MAGIC STARTS */
 
 int main() {
+
+	mk_array(int, honk, 9, 12 * i);
+
+	DO_TIMES(i, len(honk), printf("%d", honk[i]));
+	NL;
+
+	FOR_EACH(honk, printf("%d", el));
+	NL;
 
 	return 0;
 }
