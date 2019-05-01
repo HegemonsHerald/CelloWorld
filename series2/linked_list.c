@@ -3,7 +3,6 @@
 #include <string.h>
 
 
-
 /* the type definition */
 
 struct list_item {
@@ -27,6 +26,9 @@ struct list_item* mk_list_item(char* label) {
 	// copy the label into the label field, but cut it off, if it's too long
 	strncpy(el->label, label, 16);
 
+	// don't forget that there's to be nothing following this item
+	el->cdr = (struct list_item*) NULL;
+
 	return el;
 
 }
@@ -40,21 +42,21 @@ struct list_item* back  = (struct list_item*) NULL;
 
 
 
-/* operations on linked lists */
+/* Operations on linked lists */
 
-// append NEW item, return its id
+// append a new item, return its id
 int appendItem(char* label) {
 
-	struct list_item* el = mk_list_item(label);
+	struct list_item* item = mk_list_item(label);
 
-	// append el to the global list
-	if (back != NULL) back->cdr = el;	// if there are already items, then append
-	else              front     = el;	// otherwise you actually kinda create the list
+	// append item to the global list
+	if (back != NULL) back->cdr = item;	// if there are already items, then append
+	else              front     = item;	// otherwise you actually kinda create the list
 
 	// set the new last item
-	back = el;
+	back = item;
 	
-	return el->id;
+	return item->id;
 
 }
 
@@ -63,10 +65,15 @@ void printList() {
 
 	struct list_item* ptr = front;
 
+	// edge case
+	if (front == NULL) { printf("empty\n"); return; }
+
+	// otherwise you may just print them all!
 	while (ptr != NULL) {
 		printf("ID: %d\tLABEL: %s\n", ptr->id, ptr->label);
 		ptr = ptr->cdr;
 	}
+
 }
 
 // finds an item
@@ -74,11 +81,13 @@ struct list_item* findItem(int id) {
 
 	struct list_item* ptr = front;
 
+	// go looking for the item
 	while (ptr != NULL) {
 		if (ptr->id == id) return ptr;
 		ptr = ptr->cdr;
 	}
 
+	// didn't find it, :(
 	return NULL;
 
 }
@@ -86,30 +95,44 @@ struct list_item* findItem(int id) {
 // delete an item from the global list
 void deleteItem(int id) {
 
-	// define a sliding window on the last two items of the list
-	struct list_item* ptr_before = front;
-	struct list_item* ptr_item   = front;
+	struct list_item* prev = NULL;
+	struct list_item* curr = front;
 
-	while (ptr_item != NULL) {
+	// case 1: there's just one item in the list, and that's the one to delete
+	if (front == back && curr->id == id) {
 
-		// if you found the correct thingy bajingy
-		if (ptr_item->id == id) {
+		front = NULL;
+		back  = NULL;
 
-			// unlink the item from the list
-			ptr_before->cdr = ptr_item->cdr;
+		free(curr);
+		return;
+	}
 
-			// deallocate the item
-			free(ptr_item);
+	// case 2: the list has more than one item
+	//         this excludes the last item, see below
+	while (curr != back) {
 
-			// no need to continue
+		if (curr->id == id) {
+
+			if (prev == NULL) { front     = curr->cdr; }	// if the item is the first item
+			else              { prev->cdr = curr->cdr; }	// if the item is any other item
+
+			free(curr);
 			return;
-
 		}
 
-		// slide the pointer window ahead
-		ptr_before = ptr_item;
-		ptr_item   = ptr_item->cdr;
+		prev = curr;
+		curr = prev->cdr;
+	}
 
+	// case 3: the list has multiple items, and the item is the last of them
+	//         special case, because here prev->cdr needs to be set to NULL, which'd cause a segfault in case 2
+	if (curr->id == id) {
+
+		prev->cdr = (struct list_item*) NULL;
+		back = prev;
+
+		free(curr);
 	}
 
 }
@@ -134,7 +157,7 @@ void deleteList() {
 		ptr_curr = ptr_next;
 	}
 
-	// for good measure
+	// nullify to get back to the initial state
 	front = (struct list_item*) NULL;
 	back  = (struct list_item*) NULL;
 
@@ -190,8 +213,44 @@ int main () {
 	printf("%s\n", front);			// ==> (null)
 	printf("%s\n", back);			// ==> (null)
 
-	// I HAVE NO IDEA WHY, BUT THIS LIST IMPLEMENTATION CAN'T DELETE THE LAST LIST ITEM.
-	// FOR SOME REASON
+
+	/* provided tests */
+
+	int id1, id2, id3, id4, id5;
+
+	id1 = appendItem("item_1");
+	id2 = appendItem("item_2");
+	id3 = appendItem("item_3");
+	printList();
+	deleteItem(id1);
+	printf("\n");
+	printList();
+	printf("\n");
+	deleteItem(id3);
+	printf("\n");
+	printList();
+	deleteItem(id1);
+	printList();
+
+	id4 = appendItem("item_4");
+	id5 = appendItem("item_5");
+	printList();
+
+	deleteItem(id5);
+	printList();
+	deleteItem(id4);
+	printList();
+	deleteItem(id2);
+	printList();
+
+	appendItem("gizmo");
+	appendItem("bar");
+	appendItem("bar");
+	appendItem("foo");
+	printList();
+	deleteList();
+	printList();
+
 
 	return 0;
 }
