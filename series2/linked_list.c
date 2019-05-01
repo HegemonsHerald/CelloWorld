@@ -60,7 +60,9 @@ int appendItem(char* label) {
 
 // print the global list
 void printList() {
+
 	struct list_item* ptr = front;
+
 	while (ptr != NULL) {
 		printf("ID: %d\tLABEL: %s\n", ptr->id, ptr->label);
 		ptr = ptr->cdr;
@@ -187,6 +189,9 @@ int main () {
 	printf("%s\n", findItem(7));		// ==> (null)
 	printf("%s\n", front);			// ==> (null)
 	printf("%s\n", back);			// ==> (null)
+
+	// I HAVE NO IDEA WHY, BUT THIS LIST IMPLEMENTATION CAN'T DELETE THE LAST LIST ITEM.
+	// FOR SOME REASON
 
 	return 0;
 }
