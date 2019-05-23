@@ -1,0 +1,34 @@
+
+a)
+
+Der Zustand *suspended* kann von einem Scheduler genutzt werden, um laufende
+Prozesse zu unterbrechen, zum Beispiel nach dem Round Robin Prinzip.
+
+Sagen wir, wir haben einen Prozess, der auf eine sehr langwierige I/O-Operation
+warten muss, zum Beispiel auf eine Benutzereingabe, welche ja irgendwann oder
+sogar gar nicht kommen kann.
+
+Ohne eine Unterscheidung zwischen *blocked/suspended* und *ready/suspended*
+wűrde unser wartender Prozess häufig geladen werden, dann aber nichts tun. Daß
+heißt, er wűrde mehr oder weniger häufig geladen werden, nur um Resourcen zu
+verschwenden, die von anderen Prozessen, die tatsächlich etwas zu tun haben,
+genutzt werden kőnnten.
+
+Fűhrt man einen *blocked/suspended* Zustand fűr solche Prozesse, die nicht
+sofort weiterlaufen kőnnen, sondern auf ein externes Ereignis warten, und einen
+*ready/suspended* Zustand fűr Prozesse die lediglich vom Scheduler "pausiert"
+wurden, ein, lőst sich dieses Problem, da unser langwieriger Prozess jetzt
+unterbrochen bleiben kann, bis er tatsächlich wieder etwas zu tun hat.
+
+
+b)
+
+Die Zustände *blocked/suspended* und *ready/suspended* werden von einem
+Scheduler genutzt, um laufende Prozesse zu unterbrechen, damit andere Prozesse
+ebenfalls laufen kőnnen. Ein Prozess in einem *suspended* Zustand wird also
+**nicht** ausgefűhrt.  
+Prozesse in einem *running* Zustand werden ausgefűhrt. Da ein Prozess nicht
+gleichzeitig ausgefűhrt und nicht ausgefűhrt werden kann, ergibt es keinen Sinn
+einen Zustand zu haben, in dem ein Prozess gleichzeitig ausgefűhrt und nicth
+ausgefűhrt werden soll. *running/suspended* wäre ein solcher Zustand, ist
+folglich also Unsinn.

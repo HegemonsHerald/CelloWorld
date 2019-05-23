@@ -1,0 +1,20 @@
+| **Virtuelle Adresse:**     | `0x04F0` | `0x0056` | `0x0666` | `0x09FF` | `0x7800` |
+| :------------------------- | :------- | :------- | :------- | :------- | :------- |
+| **Physikalische Adresse:** | `0xF1F0` | `0x7856` | `------` | `0xDBFF` | `------` |
+
+Hexadecimal is written in `inline code` style, base 10 numbers are inline $$\LaTeX$$.
+
+| virtual address | page number | page frame | physical frame address | frame address + offset  | physical address |
+| :-------------- | :---------- | :--------- | :--------------------- | ----------------------- | :--------------- |
+| `0x04F0`        | $$4$$       | $$241$$    | $$241 * 256 = 61696$$  | $$61696 + 240 = 61936$$ | `0xF1F0`         |
+| `0x0056`        | $$0$$       | $$120$$    | $$120 * 256 = 30720$$  | $$30720 +  86 = 30806$$ | `0x7856`         |
+| `0x0666`        | $$6$$       | `------`   | `------`               | `------`                | `------`         |
+| `0x09FF`        | $$9$$       | $$219$$    | $$219 * 256 = 56064$$  | $$56064 + 255 = 56319$$ | `0xDBFF`         |
+| `0x7800`        | $$120$$     | `------`   | `------`               | `------`                | `------`         |
+
+The two leftmost digits of the virtual address are by spec the page number.
+That is used to look up the page frame in the provided table. The physical
+address of the page frame is $$n \cdot 256$$ where $$n$$ is the frame number,
+because each frame has $$256$$ bytes. The result of this product is the address
+of the byte where the frame starts. To that we add the offset specified in the
+two rightmost digits of the virtual address to get the actual address.
