@@ -1,0 +1,29 @@
+### The client's messages
+
+The database is split in two parts: messages and user data. The messages are
+actual data, the user data is session information.  
+It is assumed, that the client stores an assigned session-id as a browser would
+store a cookie.
+
+**message records** in the message database have fields for `sender`,
+`receiver` and `content`.
+
+**user records** in the user database have the fields `username`, `password`
+and `active-id`.  
+The `active-id` is one of two things: a unique identifier used to authenticate
+a client or a NULL value, if no client is logged in as the user.
+
+---
+
+| Message | Meaning |
+| :- | :- |
+| **`add <username> <password>`** | The server checks, whether the user `username` already exists. If it does, it sends an error response. If it doesn't the server creates a new user record, with `username` and `password` and the `active-id` set to empty. Then the server sends a successful response. |
+| **`login <username> <password>`** | The server checks, that the user `username` exists. If it doesn't, it sends an error response. If the user exists, the server checks, that it isn't already active. If it is, it sends an error response. Otherwise the server checks `password` for correctness. If the password is incorrect, it sends an error response. Else, it creates a new unique session identifier and sets the user record's `session-id` field to that identifier. Then it answers with a successful response containing the session identifier. |
+| **`get <session-id>`** | The server looks for a user, with its `session-id` set to the one from the `get` message. If it can't find one, it responds with an error message.  If it finds one, it has identified the user, the client is logged in as.  It fetches all messages, that have the found user as `recipient` and sends them in a successful response. |
+| **`post <session-id> <receiver> <message>`** | The server looks for a user, with its `session-id` set to the one from the `get` message. If it can't find one, it responds with an error message.  If it finds one, it has identified the user, the client is logged in as.  Now the server looks for a user with `username` set to `receiver`. If it can't find one, it sends back an error response. If it does find one, it creates a new message record, with the `sender` set to the user with the `session-id`, and the `recipient` field set to `recipient`. The record's `content` is set to the `message`. Then the server adds the record to the message database. |
+| **`logout <session-id>`** | The server looks for a user, with its `session-id` set to the one from the `get` message. If it can't find one, it responds with an error message.  If it finds one, it has identified the user, the client is logged in as.  Now the server sets the identified user's `session-id` field to a NULL value. |
+
+This has a potential vulnerability, which would have to be resolved in a real
+world scenario: Just through this protocol the server has no way of verifying,
+that a user, that wishes to `get`, `post` or `logout` has indeed been activated
+by the requesting client.

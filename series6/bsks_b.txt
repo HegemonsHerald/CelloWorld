@@ -1,0 +1,20 @@
+| Client A                           | Client B           |     | Server |
+| :-                                 | :-                 | :-: | :- |
+| `add Alice "password"`             |                    |  →  | Fails to find a user `Alice` in database. Creates a new user `Alice`, with password `"password"`. |
+|                                    |                    |  ←  | `Success: created user Alice` |
+| `login Alice "password"`           |                    |  →  | Finds user `Alice`, which is inactive. The password matches. Sets the `Alice` record's `session-id` to 1. |
+|                                    |                    |  ←  | `Success: login to Alice with session-id 1` |
+| `get 1`                            |                    |  →  | Finds user `Alice` with `session-id` set to 1. Looks for messages to `Alice`, doesn't find any. |
+|                                    |                    |  ←  | `Success: messages for Alice: NULL` |
+| `post 1 Bob "hello bobby-booooop"` |                    |  →  | Finds user `Alice` with `session-id` set to 1. Composes message record and adds it to the db. |
+|                                    |                    |  ←  | `Success: sent message to Bob` |
+|                                    | `login Bob 123456` |  →  | Finds user `Bob`, which is inactive. The password matches. Sets the `Bob` record's `session-id` to 2. |
+|                                    |                    |  ←  | `Success: login to Bob with session-id 2` |
+|                                    | `get 2`            |  →  | Finds user `Bob` with `session-id` set to 2. Looks for messages to `Bob`, finds `Alice`'s. |
+|                                    |                    |  ←  | `Success: messages for Bob: [ sender:Alice, receiver:Bob, content:"hello bobby-booooop" ]` |
+|                                    | `logout 2`         |  →  | Finds user `Bob` with `session-id` set to 2. Sets the `Bob` record's `session-id` to NULL. |
+|                                    |                    |  ←  | `Success: logout from Bob` |
+| `logout 1`                         |                    |  →  | Finds user `Alice` with `session-id` set to 1. Sets the `Alice` record's `session-id` to NULL. |
+|                                    |                    |  ←  | `Success: logout from Alice` |
+| `get 1`                            |                    |  →  | Fails to find a user with `session-id` set to 1. |
+|                                    |                    |  ←  | `Error: requested user not logged in` |
